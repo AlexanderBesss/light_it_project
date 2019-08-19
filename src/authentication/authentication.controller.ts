@@ -5,17 +5,12 @@ import {
   Body,
   BadRequestException,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { AuthenticationService } from './authentication.service';
 import { UserDto } from './dto/user.dto';
 
 @Controller('users')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
-
-  @Get()
-  async getAllUsers() {
-    return await this.userService.getAll();
-  }
+export class AuthenticationController {
+  constructor(private readonly userService: AuthenticationService) {}
 
   @Post('register')
   async register(@Body() userDto: UserDto) {

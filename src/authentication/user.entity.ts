@@ -13,8 +13,6 @@ export class UserEntity {
   password: string;
 
   comparePassword(plainPassword): boolean {
-    Logger.log(this.password);
-    Logger.log(plainPassword);
-    return this.password === plainPassword ? true : false;
+    return this.password === plainPassword;
   }
 }

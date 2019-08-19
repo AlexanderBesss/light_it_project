@@ -5,15 +5,11 @@ import { Repository } from 'typeorm';
 import { UserDto } from './dto/user.dto';
 
 @Injectable()
-export class UserService {
+export class AuthenticationService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
-
-  async getAll(): Promise<UserEntity[]> {
-    return await this.userRepository.find();
-  }
 
   async register(userDto: UserDto): Promise<UserEntity> {
     const userEntity = new UserEntity();
