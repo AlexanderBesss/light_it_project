@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticationService } from './authentication.service';
-import { UserDto } from './dto/user.dto';
 import { CreateUserDto } from './dto/createUser.dto';
 
 @Controller('auth')
