@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './createUserDto';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -11,10 +11,23 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async register(user: CreateUserDto) {
+  async getAll(): Promise<UserEntity[]> {
+    return await this.userRepository.find();
+  }
+
+  async register(userDto: UserDto): Promise<UserEntity> {
     const userEntity = new UserEntity();
-    userEntity.name = user.name;
-    userEntity.password = user.password;
-    await this.userRepository.save(userEntity);
+    userEntity.name = userDto.name;
+    userEntity.password = userDto.password;
+    return await this.userRepository.save(userEntity);
+  }
+
+  async login(userDto: UserDto) {
+    const user = await this.userRepository.findOne({ name: userDto.name });
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (!user.comparePassword(userDto.password) || user.name !== userDto.name) {
+      throw new HttpException('bad password or name', HttpStatus.BAD_REQUEST);
+    }
+    return user;
   }
 }

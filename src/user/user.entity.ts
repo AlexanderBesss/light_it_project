@@ -1,4 +1,5 @@
 import { Entity, Column, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Logger } from '@nestjs/common';
 
 @Entity('users')
 export class UserEntity {
@@ -10,4 +11,10 @@ export class UserEntity {
 
   @Column('text')
   password: string;
+
+  comparePassword(plainPassword): boolean {
+    Logger.log(this.password);
+    Logger.log(plainPassword);
+    return this.password === plainPassword ? true : false;
+  }
 }
