@@ -4,6 +4,6 @@ export class CreateUserDto {
   @Length(5, 20)
   name: string;
 
-  @Min(5)
+  @Length(5, 30)
   password: string;
 }

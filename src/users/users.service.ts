@@ -26,7 +26,8 @@ export class UsersService {
     const index = user.tokens.findIndex(token => token === oldToken);
     if (index !== -1) {
       user.tokens[index] = newToken;
-      return await this.userRepository.save(user);
+      await this.userRepository.save(user);
+      return { access_token: newToken };
     }
     throw new HttpException('Token not found', HttpStatus.NOT_FOUND);
   }

@@ -38,7 +38,7 @@ export class AuthenticationService {
     const oldToken = token.split(' ')[1];
     const user = this.jwtService.decode(oldToken) as UserDto;
     const newToken = this.getToken(user);
-    await this.usersService.refreshToken(user.id, oldToken, newToken);
+    return await this.usersService.refreshToken(user.id, oldToken, newToken);
   }
 
   async register(userDto: CreateUserDto) {
