@@ -10,4 +10,7 @@ export class UserEntity {
 
   @Column('text')
   password: string;
+
+  @Column()
+  tokens: Array<string> = new Array<string>();
 }
