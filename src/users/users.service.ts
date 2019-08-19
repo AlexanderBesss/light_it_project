@@ -39,6 +39,9 @@ export class UsersService {
   }
 
   async register(userDto: any): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({ name: userDto.name });
+    if (user)
+      throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
     const userEntity = new UserEntity();
     userEntity.name = userDto.name;
     userEntity.password = userDto.password;
