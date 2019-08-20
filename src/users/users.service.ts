@@ -4,53 +4,78 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../core/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Model } from 'mongoose';
 import { UserDto } from './dto/user.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { User } from 'src/core/entities/user';
+import { Token } from 'src/core/entities/token';
+import { UserPayloadDto } from './dto/userPayload.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
+    @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Token') private readonly tokenModel: Model<Token>,
   ) {}
 
-  async findOne(username: string): Promise<UserEntity> {
-    return await this.userRepository.findOne({ username });
+  async findOne(username: string): Promise<any> {
+    const user = await this.userModel.findOne({ username }).exec();
+    return user;
+  }
+
+  async login(username: string, password: string): Promise<UserPayloadDto> {
+    const user = await this.userModel.findOne({ username }).exec();
+    if (!user)
+      throw new HttpException(
+        'Bad username or password',
+        HttpStatus.BAD_REQUEST,
+      );
+    if (!user.comparePassword(password))
+      throw new HttpException(
+        'Bad username or password',
+        HttpStatus.BAD_REQUEST,
+      );
+    return { id: user.id, username: user.username };
   }
 
   async refreshToken(id: string, oldToken: string, newToken: string) {
-    const user = await this.userRepository.findOne(id);
-    if (!user) throw new BadRequestException();
-    const index = user.tokens.findIndex(token => token === oldToken);
-    if (index !== -1) {
-      user.tokens[index] = newToken;
-      await this.userRepository.save(user);
-      return { access_token: newToken };
-    }
-    throw new HttpException('Token not found', HttpStatus.NOT_FOUND);
+    const token = await this.tokenModel
+      .findOne({
+        token: oldToken,
+      })
+      .populate('user')
+      .exec();
+    if (!token)
+      throw new HttpException('Token not found', HttpStatus.NOT_FOUND);
+    token.token = newToken;
+    return await token.save();
   }
 
   async addToken(id: string, token: string) {
-    const user = await this.userRepository.findOne(id);
+    const user = await this.userModel
+      .findById(id)
+      .populate('tokens')
+      .exec();
+
     if (!user) throw new BadRequestException();
-    user.tokens.push(token);
-    await this.userRepository.save(user);
+    const tokenIdDb = new this.tokenModel({
+      token,
+      user,
+    });
+    await tokenIdDb.save();
+    user.tokens = [...user.tokens, tokenIdDb];
+    return await user.save();
   }
 
-  async register(userDto: UserDto): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({
-      username: userDto.username,
-    });
+  async register(userDto: UserDto): Promise<any> {
+    const user = await this.userModel
+      .findOne({
+        username: userDto.username,
+      })
+      .exec();
     if (user)
       throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
-    const userEntity = new UserEntity();
-    userEntity.username = userDto.username;
-    userEntity.password = userDto.password;
-    await this.userRepository.save(userEntity);
-    userEntity.username = userDto.username;
-    userEntity.password = userDto.password;
-    return await this.userRepository.save(userEntity);
+    const user1 = await this.userModel(userDto);
+    return await user1.save();
   }
 }
