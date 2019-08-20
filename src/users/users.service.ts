@@ -5,7 +5,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './user.entity';
+import { UserEntity } from '../core/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserDto } from './dto/user.dto';
 
