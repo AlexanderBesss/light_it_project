@@ -15,7 +15,7 @@ export class UserEntity {
 
   @Unique('unique', ['name'])
   @Column()
-  name: string;
+  username: string;
 
   @Column('text')
   password: string;

@@ -3,7 +3,6 @@ import {
   UseGuards,
   Post,
   Body,
-  Get,
   Request,
   Headers,
 } from '@nestjs/common';

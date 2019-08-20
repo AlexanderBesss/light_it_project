@@ -1,6 +1,5 @@
 import {
   Injectable,
-  Logger,
   BadRequestException,
   HttpException,
   HttpStatus,
@@ -8,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,8 +16,8 @@ export class UsersService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async findOne(name: string): Promise<UserEntity> {
-    return await this.userRepository.findOne({ name });
+  async findOne(username: string): Promise<UserEntity> {
+    return await this.userRepository.findOne({ username });
   }
 
   async refreshToken(id: string, oldToken: string, newToken: string) {
@@ -39,15 +39,17 @@ export class UsersService {
     await this.userRepository.save(user);
   }
 
-  async register(userDto: any): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({ name: userDto.name });
+  async register(userDto: UserDto): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      username: userDto.username,
+    });
     if (user)
       throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
     const userEntity = new UserEntity();
-    userEntity.name = userDto.name;
+    userEntity.username = userDto.username;
     userEntity.password = userDto.password;
     await this.userRepository.save(userEntity);
-    userEntity.name = userDto.name;
+    userEntity.username = userDto.username;
     userEntity.password = userDto.password;
     return await this.userRepository.save(userEntity);
   }

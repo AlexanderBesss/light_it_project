@@ -1,4 +1,4 @@
 export interface PayloadDto {
   id: string;
-  name: string;
+  username: string;
 }

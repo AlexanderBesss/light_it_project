@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { UserDto } from './dto/user.dto';
 import { CreateUserDto } from './dto/createUser.dto';
+import { PayloadDto } from './dto/payload.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -11,8 +11,8 @@ export class AuthenticationService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(name: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(name);
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.usersService.findOne(username);
     if (user && user.password === pass) {
       const { password, ...result } = user;
       return result;
@@ -20,7 +20,7 @@ export class AuthenticationService {
     return null;
   }
 
-  async login(user: UserDto) {
+  async login(user: PayloadDto) {
     const token = this.getToken(user);
     this.usersService.addToken(user.id, token);
     return {
@@ -28,15 +28,15 @@ export class AuthenticationService {
     };
   }
 
-  private getToken(user: UserDto): string {
-    const { id, name } = user;
-    const payload = { name, id };
+  private getToken(user: PayloadDto): string {
+    const { id, username } = user;
+    const payload = { username, id };
     return this.jwtService.sign(payload);
   }
 
   async refreshToken(token: string) {
     const oldToken = token.split(' ')[1];
-    const user = this.jwtService.decode(oldToken) as UserDto;
+    const user = this.jwtService.decode(oldToken) as PayloadDto;
     const newToken = this.getToken(user);
     return await this.usersService.refreshToken(user.id, oldToken, newToken);
   }
