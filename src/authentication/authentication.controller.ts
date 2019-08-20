@@ -22,12 +22,6 @@ export class AuthenticationController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('me')
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
-  @UseGuards(AuthGuard('jwt'))
   @Post('refresh')
   refreshToken(@Headers('authorization') token) {
     return this.authenticationService.refreshToken(token);
