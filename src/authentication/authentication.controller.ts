@@ -17,8 +17,8 @@ export class AuthenticationController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('refresh')
-  refreshToken(@Headers('authorization') token): Promise<ReturnTokenDto> {
-    return this.authenticationService.refreshToken(token);
+  refreshToken(@Headers('authorization') token, @Request() req): Promise<ReturnTokenDto> {
+    return this.authenticationService.refreshToken(token, req.user);
   }
 
   @Post('register')

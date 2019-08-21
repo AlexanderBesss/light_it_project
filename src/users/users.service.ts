@@ -26,7 +26,7 @@ export class UsersService {
       })
       .populate('user')
       .exec();
-    if (!token || !token.user) throw new HttpException('Token not found', HttpStatus.NOT_FOUND);
+    if (!token) throw new HttpException('Token not found', HttpStatus.NOT_FOUND);
     token.token = newToken;
     await token.save();
   }

@@ -36,11 +36,9 @@ export class AuthenticationService {
     return this.jwtService.sign(payload);
   }
 
-  async refreshToken(token: string): Promise<ReturnTokenDto> {
-    const oldToken = token.split(' ')[1];
-    const user = this.jwtService.decode(oldToken) as UserPayloadDto;
-    const newToken = this.getToken(user);
-    await this.usersService.refreshToken(user.id, oldToken, newToken);
+  async refreshToken(oldToken: string, userPayload: UserPayloadDto): Promise<ReturnTokenDto> {
+    const newToken = this.getToken(userPayload);
+    await this.usersService.refreshToken(userPayload.id, oldToken, newToken);
     return { access_token: newToken };
   }
 
