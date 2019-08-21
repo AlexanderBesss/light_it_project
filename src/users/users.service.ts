@@ -7,8 +7,8 @@ import {
 import { Model } from 'mongoose';
 import { UserDto } from './dto/user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from 'src/core/entities/user';
-import { Token } from 'src/core/entities/token';
+import { User } from '../core/interfaces/user';
+import { Token } from '../core/interfaces/token';
 import { UserPayloadDto } from './dto/userPayload.dto';
 
 @Injectable()
@@ -38,7 +38,11 @@ export class UsersService {
     return { id: user.id, username: user.username };
   }
 
-  async refreshToken(id: string, oldToken: string, newToken: string) {
+  async refreshToken(
+    id: string,
+    oldToken: string,
+    newToken: string,
+  ): Promise<void> {
     const token = await this.tokenModel
       .findOne({
         token: oldToken,
@@ -48,7 +52,7 @@ export class UsersService {
     if (!token)
       throw new HttpException('Token not found', HttpStatus.NOT_FOUND);
     token.token = newToken;
-    return await token.save();
+    await token.save();
   }
 
   async addToken(id: string, token: string): Promise<void> {
@@ -57,8 +61,9 @@ export class UsersService {
       .populate('tokens')
       .exec();
     if (!user) throw new BadRequestException();
-    if (user.tokens.length >= 5) {
-      user.tokens = [];
+    const maxTokensPerUser = 5;
+    if (user.tokens.length >= maxTokensPerUser) {
+      user.removeCascade(maxTokensPerUser);
     }
     const tokenIdDb = new this.tokenModel({
       token,
@@ -69,7 +74,7 @@ export class UsersService {
     await user.save();
   }
 
-  async register(userDto: UserDto): Promise<any> {
+  async register(userDto: UserDto): Promise<UserPayloadDto> {
     const user = await this.userModel
       .findOne({
         username: userDto.username,
@@ -77,7 +82,8 @@ export class UsersService {
       .exec();
     if (user)
       throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
-    const user1 = await this.userModel(userDto);
-    return await user1.save();
+    const userInDb = await this.userModel(userDto);
+    await userInDb.save();
+    return { id: userInDb.id, username: userInDb.username };
   }
 }

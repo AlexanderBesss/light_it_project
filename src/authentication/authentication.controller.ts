@@ -8,7 +8,9 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticationService } from './authentication.service';
-import { CreateUserDto } from './dto/createUser.dto';
+import { UserDto } from './dto/User.dto';
+import { ReturnTokenDto } from './dto/returnToken.dto';
+import { PayloadDto } from './dto/payload.dto';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -16,18 +18,18 @@ export class AuthenticationController {
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  async login(@Request() req) {
+  async login(@Request() req): Promise<ReturnTokenDto> {
     return this.authenticationService.login(req.user);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('refresh')
-  refreshToken(@Headers('authorization') token) {
+  refreshToken(@Headers('authorization') token): Promise<ReturnTokenDto> {
     return this.authenticationService.refreshToken(token);
   }
 
   @Post('register')
-  async register(@Body() userDto: CreateUserDto) {
+  async register(@Body() userDto: UserDto): Promise<PayloadDto> {
     return await this.authenticationService.register(userDto);
   }
 }

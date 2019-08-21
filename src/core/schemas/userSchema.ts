@@ -17,3 +17,15 @@ UserSchema.methods.comparePassword = async function comparePassword(
 ) {
   return await bcrypt.compare(plainPassword, this.password);
 };
+
+UserSchema.methods.removeCascade = async function removeCascade(
+  length: number,
+) {
+  if (this.tokens.length >= length) {
+    this.tokens.forEach(async token => {
+      await token.remove();
+    });
+    this.tokens = [];
+  }
+};
+
