@@ -22,7 +22,7 @@ export class AuthenticationService {
 
   async login(user: PayloadDto) {
     const token = this.getToken(user);
-    this.usersService.addToken(user.id, token);
+    await this.usersService.addToken(user.id, token);
     return {
       access_token: token,
     };

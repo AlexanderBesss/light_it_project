@@ -51,20 +51,22 @@ export class UsersService {
     return await token.save();
   }
 
-  async addToken(id: string, token: string) {
+  async addToken(id: string, token: string): Promise<void> {
     const user = await this.userModel
       .findById(id)
       .populate('tokens')
       .exec();
-
     if (!user) throw new BadRequestException();
+    if (user.tokens.length >= 5) {
+      user.tokens = [];
+    }
     const tokenIdDb = new this.tokenModel({
       token,
       user,
     });
     await tokenIdDb.save();
     user.tokens = [...user.tokens, tokenIdDb];
-    return await user.save();
+    await user.save();
   }
 
   async register(userDto: UserDto): Promise<any> {
