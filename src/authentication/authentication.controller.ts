@@ -1,25 +1,18 @@
-import {
-  Controller,
-  UseGuards,
-  Post,
-  Body,
-  Request,
-  Headers,
-} from '@nestjs/common';
+import { Controller, UseGuards, Post, Body, Request, Headers } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticationService } from './authentication.service';
-import { UserDto } from './dto/User.dto';
+import { AuthUserDto } from './dto/authUser.dto';
 import { ReturnTokenDto } from './dto/returnToken.dto';
-import { PayloadDto } from './dto/payload.dto';
+import { UserPayloadDto } from './dto/userPayload.dto';
+import { User } from './userDecorator';
 
 @Controller('auth')
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
-  @UseGuards(AuthGuard('local'))
   @Post('login')
-  async login(@Body() user: UserDto, @Request() req): Promise<ReturnTokenDto> {
-    return this.authenticationService.login(req.user);
+  async login(@User() user: AuthUserDto): Promise<ReturnTokenDto> {
+    return this.authenticationService.login(user);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -29,7 +22,7 @@ export class AuthenticationController {
   }
 
   @Post('register')
-  async register(@Body() userDto: UserDto): Promise<PayloadDto> {
+  async register(@Body() userDto: AuthUserDto): Promise<UserPayloadDto> {
     return await this.authenticationService.register(userDto);
   }
 }

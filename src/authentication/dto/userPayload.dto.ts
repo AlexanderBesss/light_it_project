@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-export class UserPayloadDto {
+export interface UserPayloadDto {
   id: Types.ObjectId;
   username: string;
 }
