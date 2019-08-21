@@ -4,7 +4,6 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthUserDto } from './dto/authUser.dto';
 import { UserPayloadDto } from './dto/userPayload.dto';
 import { ReturnTokenDto } from './dto/returnToken.dto';
-import { User } from '../core/interfaces/user';
 
 @Injectable()
 export class AuthenticationService {
@@ -36,8 +35,9 @@ export class AuthenticationService {
     return this.jwtService.sign(payload);
   }
 
-  async refreshToken(oldToken: string, userPayload: UserPayloadDto): Promise<ReturnTokenDto> {
+  async refreshToken(bearerToken: string, userPayload: UserPayloadDto): Promise<ReturnTokenDto> {
     const newToken = this.getToken(userPayload);
+    const oldToken = bearerToken.split(' ')[1];
     await this.usersService.refreshToken(userPayload.id, oldToken, newToken);
     return { access_token: newToken };
   }
