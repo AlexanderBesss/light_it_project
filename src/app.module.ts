@@ -5,7 +5,9 @@ import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/light_it_project'),
+    MongooseModule.forRoot('mongodb://localhost/light_it_project', {
+      useNewUrlParser: true,
+    }),
     AuthenticationModule,
     UsersModule,
     UsersModule,

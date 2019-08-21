@@ -5,15 +5,12 @@ import {
   Body,
   Request,
   Headers,
-  Req,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticationService } from './authentication.service';
 import { UserDto } from './dto/User.dto';
 import { ReturnTokenDto } from './dto/returnToken.dto';
 import { PayloadDto } from './dto/payload.dto';
-import { User } from './userDecorator';
-import { UserPayloadDto } from 'src/users/dto/userPayload.dto';
 
 @Controller('auth')
 export class AuthenticationController {
