@@ -3,15 +3,10 @@ import * as bcrypt from 'bcrypt';
 import { User } from '../interfaces/user';
 
 export const UserSchema = new mongoose.Schema<User>({
-  // id: { type: mongoose.Types.ObjectId },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   tokens: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Token' }],
 });
-
-UserSchema.methods.hashPassword = async function hashPassword(): Promise<void> {
-  this.password = await bcrypt.hash(this.password, 10);
-};
 
 UserSchema.methods.comparePassword = async function comparePassword(
   plainPassword: string,
@@ -28,7 +23,8 @@ UserSchema.methods.removeCascade = async function removeCascade(length: number):
   }
 };
 
-// UserSchema.pre('save', async function(next) {
-//   this.password = await bcrypt.hash(this.password, 10);
-//   next();
-// });
+UserSchema.pre('save', async function(next) {
+  const user = this as User;
+  user.password = await bcrypt.hash(user.password, 10);
+  next();
+});

@@ -1,4 +1,4 @@
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 import { Token } from './token';
 
 export interface User extends Document {
@@ -7,5 +7,4 @@ export interface User extends Document {
   tokens: Token[];
   comparePassword(password: string): Promise<boolean>;
   removeCascade(length: number): Promise<void>;
-  hashPassword(): void;
 }

@@ -62,7 +62,6 @@ export class UsersService {
     if (user) throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
     const newUser = { username, password, _id: new Types.ObjectId() };
     const userInDb = new this.userModel(newUser);
-    await userInDb.hashPassword();
     await userInDb.save();
     return { id: userInDb.id, username: userInDb.username };
   }
