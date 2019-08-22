@@ -7,15 +7,18 @@ import { ConfigModule } from './config/config.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/light_it_project', {
-      useNewUrlParser: true,
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get('MONGODB_URI'),
+        useCreateIndex: true,
+        useNewUrlParser: true,
+      }),
+      inject: [ConfigService],
     }),
     AuthenticationModule,
     UsersModule,
-    UsersModule,
-    ConfigModule,
   ],
   controllers: [],
-  // providers: [ConfigService],
 })
 export class AppModule {}
