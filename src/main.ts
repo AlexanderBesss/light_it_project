@@ -4,6 +4,10 @@ import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
+  if (!process.env.NODE_ENV) {
+    process.env.NODE_ENV = 'development';
+    console.log(process.env.NODE_ENV);
+  }
   const app = await NestFactory.create(AppModule);
 
   const baseUrlPath = 'api';
@@ -20,7 +24,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
 
-  console.log(process.env.NODE_ENV);
   const port = process.env.PORT || 3000;
   await app.listen(port);
 }
