@@ -20,10 +20,6 @@ import { ConfigService } from '../config/config.service';
       }),
       inject: [ConfigService],
     }),
-    // JwtModule.register({
-    //   secret: 'secret',
-    //   signOptions: { expiresIn: '1d' },
-    // }),
   ],
   providers: [AuthenticationService, JwtStrategy],
   exports: [AuthenticationService],
