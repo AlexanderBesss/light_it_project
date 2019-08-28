@@ -2,11 +2,11 @@ import { Length } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 export class AuthUserDto {
-  @ApiModelProperty()
+  @ApiModelProperty({ required: true })
   @Length(5, 30)
   username: string;
 
-  @ApiModelProperty()
+  @ApiModelProperty({ required: true })
   @Length(5, 30)
   password: string;
 }
